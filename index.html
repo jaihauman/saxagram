@@ -1,118 +1,548 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Instagram Reels Clone</title>
-    <link rel="stylesheet" href="style.css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="app__videos">
-      <div class="video">
-        <!-- header starts -->
-        <div class="videoHeader">
-          <span class="material-icons"> arrow_back </span>
-          <h3>Reels</h3>
-          <span class="material-icons"> camera_alt </span>
-        </div>
-        <!-- header ends -->
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TikTok-style Web Player (Demo)</title>
+<style>
+  :root{
+    --bg:#000;
+    --accent:#ff2d55;
+    --muted-icon:#ffffffcc;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
 
-        <video class="video__player" src="video1.mp4"></video>
+  /* Feed container with snap for full-page vertical scroll */
+  .feed{
+    height:100dvh;
+    width:100%;
+    overflow-y:auto;
+    scroll-snap-type:y mandatory;
+    -webkit-overflow-scrolling:touch;
+    background:linear-gradient(180deg,#000,#050505);
+  }
 
-        <!-- footer starts -->
-        <div class="videoFooter">
-          <div class="videoFooter__text">
-            <img class="user__avatar" src="https://www.w3schools.com/howto/img_avatar.png" alt="" />
-            <h3>Somanath Goudar • <button>Follow</button></h3>
-          </div>
+  /* Each page is full height */
+  .page{
+    height:100dvh;
+    width:100%;
+    position:relative;
+    scroll-snap-align:start;
+    display:flex;
+    align-items:stretch;
+    justify-content:center;
+    background:#000;
+  }
 
-          <div class="videoFooter__ticker">
-            <span class="material-icons"> music_note </span>
-            <marquee>Song Name</marquee>
-          </div>
+  /* Video covers the page */
+  video.player{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#000;
+  }
 
-          <div class="videoFooter__actions">
-            <div class="videoFooter__actionsLeft">
-              <span class="material-icons"> favorite </span>
-              <span class="material-icons"> mode_comment </span>
-              <span class="material-icons"> send </span>
-              <span class="material-icons"> more_horiz </span>
-            </div>
-            <div class="videoFooter__actionsRight">
-              <div class="videoFooter__stat">
-                <span class="material-icons"> favorite </span>
-                <p>12</p>
-              </div>
-              <div class="videoFooter__stat">
-                <span class="material-icons"> mode_comment </span>
-                <p>20</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- footer ends -->
-      </div>
+  /* glass overlay for UI */
+  .overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    pointer-events:none; /* let clicks go to video except controls that enable pointer-events */
+  }
 
-      <div class="video">
-        <!-- header starts -->
-        <div class="videoHeader">
-          <span class="material-icons"> arrow_back </span>
-          <h3>Reels</h3>
-          <span class="material-icons"> camera_alt </span>
-        </div>
-        <!-- header ends -->
+  /* left column: caption */
+  .left{
+    pointer-events:auto;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:20px;
+    z-index:10;
+    max-width:65%;
+  }
 
-        <video class="video__player" src="video2.mp4"></video>
+  .caption{
+    font-size:16px;
+    line-height:1.2;
+    text-shadow:0 6px 20px rgba(0,0,0,.6);
+  }
+  .account{
+    margin-top:10px;
+    color:#ddd;
+    font-size:13px;
+  }
 
-        <!-- footer starts -->
-        <div class="videoFooter">
-          <div class="videoFooter__text">
-            <img class="user__avatar" src="https://www.w3schools.com/howto/img_avatar.png" alt="" />
-            <h3>Somanath Goudar • <button>Follow</button></h3>
-          </div>
+  /* right column: actions */
+  .right{
+    pointer-events:auto;
+    width:110px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    padding-right:12px;
+    z-index:12;
+  }
 
-          <div class="videoFooter__ticker">
-            <span class="material-icons"> music_note </span>
-            <marquee>Song Name</marquee>
-          </div>
+  .action{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    user-select:none;
+    pointer-events:auto; /* enable clicks */
+  }
 
-          <div class="videoFooter__actions">
-            <div class="videoFooter__actionsLeft">
-              <span class="material-icons"> favorite </span>
-              <span class="material-icons"> mode_comment </span>
-              <span class="material-icons"> send </span>
-              <span class="material-icons"> more_horiz </span>
-            </div>
-            <div class="videoFooter__actionsRight">
-              <div class="videoFooter__stat">
-                <span class="material-icons"> favorite </span>
-                <p>12</p>
-              </div>
-              <div class="videoFooter__stat">
-                <span class="material-icons"> mode_comment </span>
-                <p>20</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- footer ends -->
-      </div>
+  .action .icon{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    box-shadow:0 8px 18px rgba(0,0,0,0.5);
+  }
+  .action .label{
+    font-size:12px;
+    opacity:.95;
+  }
+
+  /* bottom controls row */
+  .bottombar{
+    position:absolute;
+    left:14px;
+    right:14px;
+    bottom:18px;
+    z-index:15;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    pointer-events:auto;
+  }
+  .controls{
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .control-btn{
+    background:rgba(255,255,255,0.06);
+    border:none;
+    color:#fff;
+    padding:8px 10px;
+    border-radius:10px;
+    font-size:14px;
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    cursor:pointer;
+  }
+
+  /* basic placeholder for when video not ready */
+  .loader{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    z-index:8;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    pointer-events:none;
+  }
+  .dot{width:10px;height:10px;border-radius:50%;background:#fff;opacity:.85}
+
+  /* small topbar */
+  .topbar{
+    position:absolute;
+    left:14px;
+    top:14px;
+    z-index:16;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    pointer-events:auto;
+  }
+
+  /* small styles for accessibility */
+  @media (max-width:520px){
+    .left{max-width:65%}
+    .right{width:86px}
+    .action .icon{width:48px;height:48px;font-size:22px}
+  }
+
+</style>
+</head>
+<body>
+  <div class="feed" id="feed">
+    <!-- pages will be injected by JS -->
+  </div>
+
+<script>
+/*
+  TikTok-style web feed (single-file demo)
+  - Videos start muted to allow autoplay by browsers
+  - IntersectionObserver determines visible page and auto-plays that video
+  - Lazy loads video sources (data-src) and preloads neighbor videos
+*/
+
+const videos = [
+  {
+    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    caption: 'Big Buck Bunny — sample',
+    account: '@studio'
+  },
+  {
+    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    caption: 'Elephant\'s Dream — sample',
+    account: '@anim'
+  },
+  {
+    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    caption: 'Sintel — sample',
+    account: '@openmovie'
+  }
+];
+
+// Global muted state (start muted for autoplay)
+let globalMuted = true;
+
+const feed = document.getElementById('feed');
+
+// Build pages
+videos.forEach((v, idx) => {
+  const page = document.createElement('section');
+  page.className = 'page';
+  page.dataset.index = idx;
+
+  // video element with data-src (lazy)
+  const video = document.createElement('video');
+  video.className = 'player';
+  video.setAttribute('playsinline','');
+  video.setAttribute('webkit-playsinline','');
+  video.setAttribute('muted',''); // start muted for autoplay
+  video.setAttribute('loop','');
+  video.preload = 'metadata';
+  video.dataset.src = v.src; // real src assigned when near visible
+  video.dataset.index = idx;
+  video.controls = false;
+  // show poster? optional
+  // video.poster = '...';
+
+  // overlay UI
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+
+  const left = document.createElement('div');
+  left.className = 'left';
+  left.innerHTML = `
+    <div class="caption">${escapeHtml(v.caption)}</div>
+    <div class="account">${escapeHtml(v.account)} · 2h</div>
+  `;
+
+  const right = document.createElement('div');
+  right.className = 'right';
+  right.innerHTML = `
+    <div class="action" data-action="profile">
+      <div class="icon">👤</div>
+      <div class="label">Profile</div>
     </div>
+    <div class="action" data-action="like">
+      <div class="icon">♡</div>
+      <div class="label">Like</div>
+    </div>
+    <div class="action" data-action="comment">
+      <div class="icon">💬</div>
+      <div class="label">Comment</div>
+    </div>
+    <div class="action" data-action="share">
+      <div class="icon">↗️</div>
+      <div class="label">Share</div>
+    </div>
+  `;
 
-    <script>
-      const videos = document.querySelectorAll('video');
+  overlay.appendChild(left);
+  overlay.appendChild(right);
 
-      for (const video of videos) {
-        video.addEventListener('click', function () {
-          if (video.paused) {
-            video.play();
-          } else {
-            video.pause();
-          }
-        });
+  // loader placeholder
+  const loader = document.createElement('div');
+  loader.className = 'loader';
+  loader.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  loader.style.display = 'none';
+
+  // bottom control row (per page)
+  const bottom = document.createElement('div');
+  bottom.className = 'bottombar';
+  bottom.innerHTML = `
+    <div class="controls">
+      <button class="control-btn" data-action="mute">🔇 Mute</button>
+      <button class="control-btn" data-action="next">⏭ Next</button>
+    </div>
+    <div style="opacity:.85">Demo — Local no-backend</div>
+  `;
+
+  page.appendChild(video);
+  page.appendChild(overlay);
+  page.appendChild(loader);
+  page.appendChild(bottom);
+
+  feed.appendChild(page);
+
+  // event: click/tap toggles play/pause
+  page.addEventListener('click', (ev) => {
+    // if clicking a control, ignore
+    if (ev.target.closest('.control-btn') || ev.target.closest('.action')) return;
+    togglePlayPause(video);
+  });
+
+  // action buttons
+  right.querySelectorAll('.action').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const act = el.dataset.action;
+      if (act === 'like') {
+        toggleLike(el);
+      } else if (act === 'profile') {
+        alert('Profile action clicked (demo)');
+      } else if (act === 'comment') {
+        alert('Comment action clicked (demo)');
+      } else if (act === 'share') {
+        alert('Share action clicked (demo)');
       }
-    </script>
-  </body>
+    });
+  });
+
+  bottom.querySelectorAll('.control-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const action = btn.dataset.action;
+      if (action === 'mute') {
+        globalMuted = !globalMuted;
+        updateMuteState();
+        btn.textContent = globalMuted ? '🔇 Mute' : '🔊 Unmute';
+      } else if (action === 'next') {
+        scrollToIndex(Math.min(videos.length - 1, idx + 1));
+      }
+      e.stopPropagation();
+    });
+  });
+
+});
+
+// Escape simple HTML
+function escapeHtml(str){
+  return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+
+// Toggle like visual
+function toggleLike(el){
+  const icon = el.querySelector('.icon');
+  const label = el.querySelector('.label');
+  const liked = icon.dataset.liked === '1';
+  if (liked){
+    icon.textContent = '♡';
+    icon.dataset.liked = '0';
+    label.textContent = 'Like';
+  } else {
+    icon.textContent = '❤';
+    icon.dataset.liked = '1';
+    label.textContent = 'Liked';
+    // small feedback
+    icon.animate([{ transform: 'scale(1.6)' }, { transform: 'scale(1)' }], { duration: 250, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  }
+}
+
+// Toggle play/pause
+function togglePlayPause(video){
+  if (!video) return;
+  if (video.paused) {
+    video.play().catch(()=>{});
+  } else {
+    video.pause();
+  }
+}
+
+// Update mute state for all videos
+function updateMuteState(){
+  document.querySelectorAll('video.player').forEach(v => {
+    v.muted = globalMuted;
+    // also adjust volume for some browsers
+    try { v.volume = globalMuted ? 0 : 1; } catch(e) {}
+  });
+}
+
+// Scroll helper
+function scrollToIndex(i){
+  const page = document.querySelector(`.page[data-index="${i}"]`);
+  if (page) page.scrollIntoView({behavior:'smooth'});
+}
+
+// IntersectionObserver to auto-play visible video
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const el = entry.target;
+    const video = el.querySelector('video.player');
+    const loader = el.querySelector('.loader');
+
+    if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+      // when page is visible enough, ensure src is set and play
+      ensureVideoLoaded(video);
+      // show loader until ready
+      if (!video.readyState || video.readyState < 3) {
+        loader.style.display = 'flex';
+      } else {
+        loader.style.display = 'none';
+      }
+      // pause other videos
+      document.querySelectorAll('video.player').forEach(v => {
+        if (v !== video) {
+          if (!v.paused) v.pause();
+        }
+      });
+
+      // try play
+      video.play().catch((err) => {
+        // autoplay might fail if not muted
+        console.warn('Play failed', err);
+      });
+
+      // preload neighbors
+      const idx = Number(el.dataset.index);
+      preloadNeighbor(idx + 1);
+      preloadNeighbor(idx - 1);
+
+      // dispose far videos (optional): remove src of videos more than 3 away to save memory
+      document.querySelectorAll('.page').forEach(p => {
+        const otherIdx = Number(p.dataset.index);
+        if (Math.abs(otherIdx - idx) > 3) {
+          const v = p.querySelector('video.player');
+          if (v && v.dataset.srcRemoved !== '1') {
+            // remove src to free memory
+            v.removeAttribute('src');
+            v.load();
+            v.dataset.srcRemoved = '1';
+          }
+        }
+      });
+
+    } else {
+      // not visible enough -> pause
+      if (video && !video.paused) {
+        video.pause();
+      }
+    }
+  });
+}, { threshold: [0.25, 0.5, 0.75] });
+
+// Attach observer to pages
+document.querySelectorAll('.page').forEach(p => observer.observe(p));
+
+// Ensure video element has src loaded (lazy)
+function ensureVideoLoaded(video){
+  if (!video) return;
+  // if removed previously, reassign
+  if (!video.src || video.src === '') {
+    if (video.dataset.src) {
+      video.src = video.dataset.src;
+      video.load();
+      video.dataset.srcRemoved = '0';
+    }
+  } else if (video.dataset.src && video.src.indexOf(video.dataset.src) === -1) {
+    // s & fallback
+    video.src = video.dataset.src;
+  }
+  // set muted according to global
+  video.muted = globalMuted;
+}
+
+// Preload neighbor (set src and call load)
+function preloadNeighbor(index){
+  const page = document.querySelector(`.page[data-index="${index}"]`);
+  if (!page) return;
+  const vid = page.querySelector('video.player');
+  if (!vid) return;
+  if (!vid.src || vid.src === ''){
+    if (vid.dataset.src) {
+      vid.src = vid.dataset.src;
+      // small preload level
+      try { vid.preload = 'metadata'; } catch(e){}
+      vid.load();
+      vid.dataset.srcRemoved = '0';
+    }
+  }
+}
+
+// Keyboard navigation for convenience
+window.addEventListener('keydown',(e)=>{
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    const next = getCurrentIndex() + 1;
+    if (next < videos.length) scrollToIndex(next);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    const prev = getCurrentIndex() - 1;
+    if (prev >= 0) scrollToIndex(prev);
+  } else if (e.key === 'm' || e.key === 'M') {
+    globalMuted = !globalMuted;
+    updateMuteState();
+  }
+});
+
+// Determine current index by checking which page center is near viewport center
+function getCurrentIndex(){
+  let best = 0;
+  let bestRatio = 0;
+  document.querySelectorAll('.page').forEach(p=>{
+    const rect = p.getBoundingClientRect();
+    const areaVisible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+    const ratio = areaVisible / rect.height;
+    if (ratio > bestRatio) {
+      bestRatio = ratio;
+      best = Number(p.dataset.index);
+    }
+  });
+  return best;
+}
+
+// Initial load: make sure first video and neighbor are loaded and muted flag applied
+document.addEventListener('DOMContentLoaded',()=>{
+  // load first two
+  const first = document.querySelector('.page[data-index="0"] video.player');
+  if (first) {
+    first.src = first.dataset.src;
+    first.load();
+    first.muted = globalMuted;
+  }
+  const second = document.querySelector('.page[data-index="1"] video.player');
+  if (second) {
+    second.src = second.dataset.src;
+    second.load();
+    second.muted = globalMuted;
+  }
+
+  // try to autoplay the first when allowed
+  setTimeout(()=> {
+    if (first) {
+      first.play().catch(()=>{});
+    }
+  }, 250);
+});
+
+// Optional: improve mobile swipe feel by hiding address bar initially
+setTimeout(()=>{ window.scrollTo(0,1); }, 500);
+
+</script>
+</body>
 </html>
